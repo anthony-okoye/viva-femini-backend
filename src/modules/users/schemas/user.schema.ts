@@ -13,6 +13,9 @@ export class User extends Document {
   })
   reference: string;
 
+  @Prop({ required: true, unique: true, index: true })
+  firebase_uid: string;
+
   @Prop({ required: true, unique: true, lowercase: true, trim: true })
   email: string;
 
@@ -22,8 +25,8 @@ export class User extends Document {
   @Prop({ required: true, lowercase: true, trim: true })
   lastname: string;
 
-  @Prop({ required: true })
-  password: string;
+  @Prop({ required: false })
+  password?: string;
 
   @Prop({ default: null })
   profile_url: string;
