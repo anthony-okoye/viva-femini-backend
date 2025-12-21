@@ -10,13 +10,13 @@ export class UsersController {
   @UseGuards(FirebaseAuthGuard)
   @Get('me')
   async getMyProfile(@Request() req) {
-    // req.user is populated by the FirebaseAuthGuard after verification
-    return this.usersService.findByReference(req.user.reference);
+    // req.user.uid is populated by the FirebaseAuthGuard from the verified token
+    return this.usersService.findByFirebaseUid(req.user.uid);
   }
 
   @UseGuards(FirebaseAuthGuard)
   @Patch('me')
   async updateMyProfile(@Request() req, @Body() updateData: any) {
-    return this.usersService.updateProfile(req.user.reference, updateData);
+    return this.usersService.updateProfileByFirebaseUid(req.user.uid, updateData);
   }
 }

@@ -34,6 +34,14 @@ export class UsersService {
     return user;
   }
 
+  async updateProfileByFirebaseUid(firebase_uid: string, updateData: Partial<User>): Promise<User> {
+    const user = await this.userModel
+      .findOneAndUpdate({ firebase_uid }, updateData, { new: true })
+      .exec();
+    if (!user) throw new NotFoundException('User profile not found');
+    return user;
+  }
+
   async updateProfile(reference: string, updateData: Partial<User>): Promise<User> {
     const user = await this.userModel
       .findOneAndUpdate({ reference }, updateData, { new: true })
