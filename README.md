@@ -57,6 +57,9 @@ MONGODB_URI=mongodb://localhost:27017/vivafemini
 # Server Configuration
 PORT=3050
 
+# Frontend URL
+FRONTEND_URL=http://localhost:3000
+
 # Firebase Admin SDK (optional if using firebase-adminsdk.json)
 FIREBASE_PROJECT_ID=your-project-id
 FIREBASE_CLIENT_EMAIL=your-client-email
@@ -68,6 +71,7 @@ FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY----
 - `MONGODB_URI`: MongoDB connection string (local or Atlas)
 - `PORT`: Port number for the API server (default: 3050)
 - `FIREBASE_*`: Firebase Admin SDK credentials (alternative to JSON file)
+- `FRONTEND_URL`: Frontend URL allowing the frontend communicate without hitting CORS error
 
 ## 🔥 Firebase Configuration
 
