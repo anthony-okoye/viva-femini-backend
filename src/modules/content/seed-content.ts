@@ -124,6 +124,20 @@ export const seedData = {
       ],
       order: 4,
       isActive: true
+    },
+    {
+      category: "Digestion & Appetite",
+      symptoms: [
+        { id: "bloating", label: "Bloating", emoji: "🫃", color: "pink", description: "" },
+        { id: "constipation", label: "Constipation", emoji: "😣", color: "pink", description: "" },
+        { id: "diarrhea-digestive", label: "Diarrhea", emoji: "😖", color: "pink", description: "" },
+        { id: "nausea-digestive", label: "Nausea", emoji: "🤢", color: "pink", description: "" },
+        { id: "food-cravings", label: "Food cravings", emoji: "🍕", color: "pink", description: "" },
+        { id: "increased-appetite", label: "Increased appetite", emoji: "😋", color: "pink", description: "" },
+        { id: "decreased-appetite", label: "Decreased appetite", emoji: "😐", color: "pink", description: "" }
+      ],
+      order: 5,
+      isActive: true
     }
   ],
 

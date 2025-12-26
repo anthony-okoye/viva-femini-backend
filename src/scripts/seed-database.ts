@@ -1,11 +1,16 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from '../app.module';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { getModelToken } from '@nestjs/mongoose';
 import { Article } from '../modules/content/schemas/article.schema';
 import { QuickAction } from '../modules/content/schemas/quick-action.schema';
 import { SymptomCategory } from '../modules/content/schemas/symptom-category.schema';
 import { HealthTip } from '../modules/content/schemas/health-tip.schema';
+import { CycleRecord } from '../modules/tracking/schemas/cycle-record.schema';
+import { SymptomLog } from '../modules/tracking/schemas/symptom-log.schema';
+import { SymptomFrequency } from '../modules/health-report/schemas/symptom-frequency.schema';
+import { User } from '../modules/users/schemas/user.schema';
+import { sampleTrackingData } from './seed-tracking-data';
 
 const seedData = {
   articles: [
@@ -123,6 +128,20 @@ const seedData = {
       ],
       order: 4,
       isActive: true
+    },
+    {
+      category: "Digestion & Appetite",
+      symptoms: [
+        { id: "bloating", label: "Bloating", emoji: "🫃", color: "pink", description: "" },
+        { id: "constipation", label: "Constipation", emoji: "😣", color: "pink", description: "" },
+        { id: "diarrhea-digestive", label: "Diarrhea", emoji: "😖", color: "pink", description: "" },
+        { id: "nausea-digestive", label: "Nausea", emoji: "🤢", color: "pink", description: "" },
+        { id: "food-cravings", label: "Food cravings", emoji: "🍕", color: "pink", description: "" },
+        { id: "increased-appetite", label: "Increased appetite", emoji: "😋", color: "pink", description: "" },
+        { id: "decreased-appetite", label: "Decreased appetite", emoji: "😐", color: "pink", description: "" }
+      ],
+      order: 5,
+      isActive: true
     }
   ],
 
@@ -188,6 +207,57 @@ async function seed() {
     const healthTips = await healthTipModel.insertMany(seedData.healthTips);
     console.log(`✅ Inserted ${healthTips.length} health tips\n`);
 
+    // Seed Tracking Data (for demo/test user)
+    const userModel = app.get<Model<User>>(getModelToken(User.name));
+    const cycleRecordModel = app.get<Model<CycleRecord>>(getModelToken(CycleRecord.name));
+    const symptomLogModel = app.get<Model<SymptomLog>>(getModelToken(SymptomLog.name));
+    const symptomFrequencyModel = app.get<Model<SymptomFrequency>>(getModelToken(SymptomFrequency.name));
+
+    // Find first user or skip if no users exist
+    const firstUser = await userModel.findOne().lean();
+    
+    if (firstUser) {
+      console.log(`📊 Seeding tracking data for user: ${firstUser.email}...`);
+      
+      // Clear existing tracking data for this user
+      await Promise.all([
+        cycleRecordModel.deleteMany({ userId: firstUser._id }),
+        symptomLogModel.deleteMany({ userId: firstUser._id }),
+        symptomFrequencyModel.deleteMany({ userId: firstUser._id })
+      ]);
+
+      // Seed Cycle Records
+      const cycleRecords = await cycleRecordModel.insertMany(
+        sampleTrackingData.cycleRecords.map(record => ({
+          ...record,
+          userId: firstUser._id,
+        }))
+      );
+      console.log(`✅ Inserted ${cycleRecords.length} cycle records`);
+
+      // Seed Symptom Logs
+      const symptomLogs = await symptomLogModel.insertMany(
+        sampleTrackingData.symptomLogs.map(log => ({
+          ...log,
+          userId: firstUser._id,
+        }))
+      );
+      console.log(`✅ Inserted ${symptomLogs.length} symptom logs`);
+
+      // Seed Symptom Frequency (hardcoded percentages)
+      const symptomFrequencies = await symptomFrequencyModel.insertMany([
+        { userId: firstUser._id, category: 'Physical Pain', percentage: 55, calculatedAt: new Date() },
+        { userId: firstUser._id, category: 'Mood & Mental', percentage: 75, calculatedAt: new Date() },
+        { userId: firstUser._id, category: 'Period Indicators', percentage: 23, calculatedAt: new Date() },
+        { userId: firstUser._id, category: 'Sexual Health', percentage: 32, calculatedAt: new Date() },
+        { userId: firstUser._id, category: 'Digestion & Appetite', percentage: 62, calculatedAt: new Date() }
+      ]);
+      console.log(`✅ Inserted ${symptomFrequencies.length} symptom frequency records\n`);
+    } else {
+      console.log('⚠️  No users found. Skipping tracking data seeding.');
+      console.log('   Create a user account first, then re-run seed.\n');
+    }
+
     // Summary
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log('🎉 Database seeding completed successfully!');
@@ -197,6 +267,11 @@ async function seed() {
     console.log(`   • Quick Actions: ${quickActions.length}`);
     console.log(`   • Symptom Categories: ${symptomCategories.length}`);
     console.log(`   • Health Tips: ${healthTips.length}`);
+    if (firstUser) {
+      console.log(`   • Cycle Records: 3 (for ${firstUser.email})`);
+      console.log(`   • Symptom Logs: 8 (for ${firstUser.email})`);
+      console.log(`   • Symptom Frequencies: 5 (for ${firstUser.email})`);
+    }
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 
   } catch (error) {

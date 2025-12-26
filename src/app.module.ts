@@ -7,6 +7,8 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { FirebaseModule } from './firebase/firebase.module';
 import { ContentModule } from './modules/content/content.module';
+import { TrackingModule } from './modules/tracking/tracking.module';
+import { HealthReportModule } from './modules/health-report/health-report.module';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { ContentModule } from './modules/content/content.module';
     AuthModule,
     FirebaseModule,
     ContentModule,
+    TrackingModule,
+    HealthReportModule,
   ],
   controllers: [AppController],
   providers: [AppService],
