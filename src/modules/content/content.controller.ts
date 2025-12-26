@@ -1,11 +1,15 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards, Req } from '@nestjs/common';
 import { ContentService } from './content.service';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
+import { UsersService } from '../users/users.service';
 
 @Controller('content')
 @UseGuards(FirebaseAuthGuard)
 export class ContentController {
-  constructor(private readonly contentService: ContentService) {}
+  constructor(
+    private readonly contentService: ContentService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @Get()
   async getAllContent() {
@@ -30,5 +34,16 @@ export class ContentController {
   @Get('health-tips')
   async getHealthTips() {
     return this.contentService.getHealthTips();
+  }
+
+  @Get('cycle-highlights')
+  async getCycleHighlights() {
+    return this.contentService.getCycleHighlights();
+  }
+
+  @Get('daily-checkoff')
+  async getDailyCheckoff(@Req() req: any) {
+    const user = await this.usersService.findByFirebaseUid(req.user.uid);
+    return this.contentService.getDailyCheckoff(user._id.toString());
   }
 }

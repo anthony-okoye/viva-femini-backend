@@ -9,6 +9,8 @@ import { HealthTip } from '../modules/content/schemas/health-tip.schema';
 import { CycleRecord } from '../modules/tracking/schemas/cycle-record.schema';
 import { SymptomLog } from '../modules/tracking/schemas/symptom-log.schema';
 import { SymptomFrequency } from '../modules/health-report/schemas/symptom-frequency.schema';
+import { CycleHighlight } from '../modules/content/schemas/cycle-highlight.schema';
+import { DailyCheckoff } from '../modules/content/schemas/daily-checkoff.schema';
 import { User } from '../modules/users/schemas/user.schema';
 import { sampleTrackingData } from './seed-tracking-data';
 
@@ -162,6 +164,54 @@ const seedData = {
       priority: 9,
       isActive: true
     }
+  ],
+
+  cycleHighlights: [
+    {
+      icon: "💧",
+      title: "Stay Comfortable",
+      description: "On heavy flow days, prioritize comfort. Stay hydrated and use heating pads.",
+      action: "Listen to your body",
+      colorClass: "blush",
+      order: 1,
+      isActive: true
+    },
+    {
+      icon: "🧘",
+      title: "Gentle Movement",
+      description: "Light stretches and walks can ease discomfort during your cycle.",
+      action: "Stay active",
+      colorClass: "peach",
+      order: 2,
+      isActive: true
+    },
+    {
+      icon: "🛌",
+      title: "Rest & Recover",
+      description: "Your body works hard. Aim for 8+ hours of sleep and frequent breaks.",
+      action: "Prioritize sleep",
+      colorClass: "mint",
+      order: 3,
+      isActive: true
+    },
+    {
+      icon: "🍵",
+      title: "Herbal Teas",
+      description: "Ginger or peppermint tea can help soothe cramps and bloating.",
+      action: "Soothe naturally",
+      colorClass: "blush",
+      order: 4,
+      isActive: true
+    },
+    {
+      icon: "🥗",
+      title: "Iron-Rich Foods",
+      description: "Leafy greens and lentils help replenish iron levels during menstruation.",
+      action: "Eat nutritiously",
+      colorClass: "peach",
+      order: 5,
+      isActive: true
+    }
   ]
 };
 
@@ -176,6 +226,7 @@ async function seed() {
     const quickActionModel = app.get<Model<QuickAction>>(getModelToken(QuickAction.name));
     const symptomCategoryModel = app.get<Model<SymptomCategory>>(getModelToken(SymptomCategory.name));
     const healthTipModel = app.get<Model<HealthTip>>(getModelToken(HealthTip.name));
+    const cycleHighlightModel = app.get<Model<CycleHighlight>>(getModelToken(CycleHighlight.name));
 
     // Clear existing data
     console.log('🗑️  Clearing existing data...');
@@ -183,7 +234,8 @@ async function seed() {
       articleModel.deleteMany({}),
       quickActionModel.deleteMany({}),
       symptomCategoryModel.deleteMany({}),
-      healthTipModel.deleteMany({})
+      healthTipModel.deleteMany({}),
+      cycleHighlightModel.deleteMany({})
     ]);
     console.log('✅ Existing data cleared\n');
 
@@ -207,11 +259,17 @@ async function seed() {
     const healthTips = await healthTipModel.insertMany(seedData.healthTips);
     console.log(`✅ Inserted ${healthTips.length} health tips\n`);
 
+    // Seed Cycle Highlights
+    console.log('🌟 Seeding cycle highlights...');
+    const cycleHighlights = await cycleHighlightModel.insertMany(seedData.cycleHighlights);
+    console.log(`✅ Inserted ${cycleHighlights.length} cycle highlights\n`);
+
     // Seed Tracking Data (for demo/test user)
     const userModel = app.get<Model<User>>(getModelToken(User.name));
     const cycleRecordModel = app.get<Model<CycleRecord>>(getModelToken(CycleRecord.name));
     const symptomLogModel = app.get<Model<SymptomLog>>(getModelToken(SymptomLog.name));
     const symptomFrequencyModel = app.get<Model<SymptomFrequency>>(getModelToken(SymptomFrequency.name));
+    const dailyCheckoffModel = app.get<Model<DailyCheckoff>>(getModelToken(DailyCheckoff.name));
 
     // Find first user or skip if no users exist
     const firstUser = await userModel.findOne().lean();
@@ -223,7 +281,8 @@ async function seed() {
       await Promise.all([
         cycleRecordModel.deleteMany({ userId: firstUser._id }),
         symptomLogModel.deleteMany({ userId: firstUser._id }),
-        symptomFrequencyModel.deleteMany({ userId: firstUser._id })
+        symptomFrequencyModel.deleteMany({ userId: firstUser._id }),
+        dailyCheckoffModel.deleteMany({ userId: firstUser._id })
       ]);
 
       // Seed Cycle Records
@@ -252,7 +311,18 @@ async function seed() {
         { userId: firstUser._id, category: 'Sexual Health', percentage: 32, calculatedAt: new Date() },
         { userId: firstUser._id, category: 'Digestion & Appetite', percentage: 62, calculatedAt: new Date() }
       ]);
-      console.log(`✅ Inserted ${symptomFrequencies.length} symptom frequency records\n`);
+      console.log(`✅ Inserted ${symptomFrequencies.length} symptom frequency records`);
+
+      // Seed Daily Checkoff
+      const dailyCheckoff = await dailyCheckoffModel.create({
+        userId: firstUser._id,
+        date: new Date(),
+        symptoms: 'Mild Bloating, Cravings 🍫',
+        healthReport: 'Pilates (Logged)',
+        trendSymptom: 'Bloating',
+        trendIntensity: 'Stable 😌'
+      });
+      console.log(`✅ Inserted daily checkoff record\n`);
     } else {
       console.log('⚠️  No users found. Skipping tracking data seeding.');
       console.log('   Create a user account first, then re-run seed.\n');
@@ -267,10 +337,12 @@ async function seed() {
     console.log(`   • Quick Actions: ${quickActions.length}`);
     console.log(`   • Symptom Categories: ${symptomCategories.length}`);
     console.log(`   • Health Tips: ${healthTips.length}`);
+    console.log(`   • Cycle Highlights: ${cycleHighlights.length}`);
     if (firstUser) {
       console.log(`   • Cycle Records: 3 (for ${firstUser.email})`);
       console.log(`   • Symptom Logs: 8 (for ${firstUser.email})`);
       console.log(`   • Symptom Frequencies: 5 (for ${firstUser.email})`);
+      console.log(`   • Daily Checkoff: 1 (for ${firstUser.email})`);
     }
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 
