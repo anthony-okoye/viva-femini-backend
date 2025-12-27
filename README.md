@@ -4,17 +4,17 @@ Backend API for VivaFemini - A women's health tracking application focused on me
 
 ## 📋 Table of Contents
 
-- [Tech Stack](#tech-stack)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Environment Setup](#environment-setup)
-- [Firebase Configuration](#firebase-configuration)
-- [Database Seeding](#database-seeding)
-- [Running the Application](#running-the-application)
-- [API Documentation](#api-documentation)
-- [Module Structure](#module-structure)
-- [Testing](#testing)
-- [Troubleshooting](#troubleshooting)
+- [🛠 Tech Stack](#-tech-stack)
+- [📦 Prerequisites](#-prerequisites)
+- [🚀 Installation](#-installation)
+- [⚙️ Environment Setup](#️-environment-setup)
+- [🔥 Firebase Configuration](#-firebase-configuration)
+- [🌱 Database Seeding](#-database-seeding)
+- [🏃 Running the Application](#-running-the-application)
+- [📚 API Documentation](#-api-documentation)
+- [🏗 Module Structure](#-module-structure)
+- [🧪 Testing](#-testing)
+- [🔧 Troubleshooting](#-troubleshooting)
 
 ## 🛠 Tech Stack
 
@@ -37,11 +37,13 @@ Before you begin, ensure you have the following installed:
 ## 🚀 Installation
 
 1. Navigate to the backend directory:
+
 ```bash
 cd backend
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
@@ -112,6 +114,7 @@ npm run seed
 ```
 
 **Important Notes:**
+
 - The script clears existing content data before seeding
 - Tracking data (cycle records, symptom logs, symptom frequencies) is only seeded for the first registered user
 - You must create a user account via the frontend before running the seed script for tracking data
@@ -119,11 +122,13 @@ npm run seed
 ## 🏃 Running the Application
 
 ### Development Mode (with hot-reload):
+
 ```bash
 npm run start:dev
 ```
 
 ### Production Mode:
+
 ```bash
 # Build the application
 npm run build
@@ -133,6 +138,7 @@ npm run start:prod
 ```
 
 ### Standard Mode:
+
 ```bash
 npm run start
 ```
@@ -142,12 +148,15 @@ The API will be available at `http://localhost:3050` (or your configured PORT).
 ## 📚 API Documentation
 
 ### Base URL
+
 ```
 http://localhost:3050
 ```
 
 ### Authentication
+
 All endpoints (except health check) require Firebase Authentication token in the Authorization header:
+
 ```
 Authorization: Bearer <firebase-id-token>
 ```
@@ -155,6 +164,7 @@ Authorization: Bearer <firebase-id-token>
 ### Available Modules
 
 #### 1. **Content Module** (`/content`)
+
 Manages static content for the application.
 
 - `GET /content` - Get all content (articles, quick actions, symptom categories, health tips)
@@ -164,6 +174,7 @@ Manages static content for the application.
 - `GET /content/health-tips` - Get health tips
 
 #### 2. **Users Module** (`/users`)
+
 Manages user profiles and authentication.
 
 - `POST /users/register` - Register new user
@@ -171,6 +182,7 @@ Manages user profiles and authentication.
 - `PATCH /users/me` - Update user profile (including profile picture upload)
 
 #### 3. **Tracking Module** (`/tracking`)
+
 Handles symptom and cycle tracking data entry.
 
 - `GET /tracking/cycle-records?limit=12` - Get user's cycle records
@@ -179,6 +191,7 @@ Handles symptom and cycle tracking data entry.
 - `POST /tracking/symptom-logs` - Create new symptom log
 
 #### 4. **Health Report Module** (`/health-report`)
+
 Provides analytics and insights for the health report page.
 
 - `GET /health-report/cycle-summary` - Get cycle summary (avg length, next period estimate, ovulation window)
@@ -265,26 +278,33 @@ npm run test:cov
 ### Common Issues:
 
 #### 1. MongoDB Connection Error
+
 ```
 Error: connect ECONNREFUSED 127.0.0.1:27017
 ```
+
 **Solution**: Ensure MongoDB is running locally or check your `MONGODB_URI` in `.env`
 
 #### 2. Firebase Authentication Error
+
 ```
 Error: Could not load the default credentials
 ```
+
 **Solution**: Verify `firebase-adminsdk.json` exists in the backend root or check Firebase environment variables
 
 #### 3. Seed Script Fails
+
 ```
 Error: No users found. Skipping tracking data seeding.
 ```
+
 **Solution**: Create a user account via the frontend first, then run `npm run seed`
 
 ### Getting Help
 
 If you encounter issues not covered here:
+
 1. Check the [NestJS Documentation](https://docs.nestjs.com)
 2. Review the [MongoDB Documentation](https://docs.mongodb.com)
 3. Check [Firebase Admin SDK Documentation](https://firebase.google.com/docs/admin/setup)
