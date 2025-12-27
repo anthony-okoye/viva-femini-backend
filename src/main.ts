@@ -42,8 +42,8 @@ async function bootstrap() {
     //   'X-Api-Version',
     // ],
     credentials: true,
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
+    // preflightContinue: false,
+    // optionsSuccessStatus: 204,
   });
 
   // Increase payload size limit for base64 images (10MB)
