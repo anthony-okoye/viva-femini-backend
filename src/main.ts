@@ -24,26 +24,23 @@ async function bootstrap() {
     }),
   );
 
-  // ✅ EXPLICIT OPTIONS HANDLER (NON-NEGOTIABLE ON VERCEL)
-  server.options('*', cors());
-
   const app = await NestFactory.create(AppModule, new ExpressAdapter(server),);
 
   app.enableCors({
     origin: frontendUrls,
-    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
-    allowedHeaders: [
-      'Content-Type',
-      'Authorization',
-      'Accept',
-      'X-Requested-With',
-      'X-CSRF-Token',
-      'Accept-Version',
-      'Content-Length',
-      'Content-MD5',
-      'Date',
-      'X-Api-Version',
-    ],
+    // methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    // allowedHeaders: [
+    //   'Content-Type',
+    //   'Authorization',
+    //   'Accept',
+    //   'X-Requested-With',
+    //   'X-CSRF-Token',
+    //   'Accept-Version',
+    //   'Content-Length',
+    //   'Content-MD5',
+    //   'Date',
+    //   'X-Api-Version',
+    // ],
     credentials: true,
     preflightContinue: false,
     optionsSuccessStatus: 204,
