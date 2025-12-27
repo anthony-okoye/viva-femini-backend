@@ -1,15 +1,20 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { json, urlencoded } from 'express';
+// Vercel serverless function entry point
+const { NestFactory } = require('@nestjs/core');
+const { AppModule } = require('../dist/app.module');
+const { json, urlencoded } = require('express');
+
+let cachedApp = null;
 
 async function bootstrap() {
+  if (cachedApp) {
+    return cachedApp;
+  }
+
   const app = await NestFactory.create(AppModule);
 
   const frontendUrls = process.env.FRONTEND_URL 
     ? process.env.FRONTEND_URL.split(',').map(url => url.trim())
     : ['http://localhost:3000', 'https://viva-femini-frontend.vercel.app'];
-
-  console.log('CORS enabled for origins:', frontendUrls);
 
   app.enableCors({
     origin: frontendUrls,
@@ -31,13 +36,17 @@ async function bootstrap() {
     optionsSuccessStatus: 204,
   });
 
-  // Increase payload size limit for base64 images (10MB)
   app.use(json({ limit: '10mb' }));
   app.use(urlencoded({ extended: true, limit: '10mb' }));
 
-  const port = process.env.PORT ?? 3050;
-  await app.listen(port);
-  console.log(`Application is running on: http://localhost:${port}`);
+  await app.init();
+
+  cachedApp = app;
+  return app;
 }
 
-bootstrap();
+module.exports = async (req, res) => {
+  const app = await bootstrap();
+  const server = app.getHttpAdapter().getInstance();
+  return server(req, res);
+};
