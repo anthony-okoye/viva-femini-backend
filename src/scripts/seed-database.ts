@@ -13,6 +13,8 @@ import { CycleHighlight } from '../modules/content/schemas/cycle-highlight.schem
 import { DailyCheckoff } from '../modules/content/schemas/daily-checkoff.schema';
 import { User } from '../modules/users/schemas/user.schema';
 import { sampleTrackingData } from './seed-tracking-data';
+import { periodLengthData } from './seed-period-length';
+import { PeriodLength } from '../modules/health-report/schemas/period-length.schema';
 
 const seedData = {
   articles: [
@@ -227,6 +229,7 @@ async function seed() {
     const symptomCategoryModel = app.get<Model<SymptomCategory>>(getModelToken(SymptomCategory.name));
     const healthTipModel = app.get<Model<HealthTip>>(getModelToken(HealthTip.name));
     const cycleHighlightModel = app.get<Model<CycleHighlight>>(getModelToken(CycleHighlight.name));
+    const periodLengthModel = app.get<Model<PeriodLength>>(getModelToken(PeriodLength.name));
 
     // Clear existing data
     console.log('🗑️  Clearing existing data...');
@@ -235,7 +238,8 @@ async function seed() {
       quickActionModel.deleteMany({}),
       symptomCategoryModel.deleteMany({}),
       healthTipModel.deleteMany({}),
-      cycleHighlightModel.deleteMany({})
+      cycleHighlightModel.deleteMany({}),
+      periodLengthModel.deleteMany({})
     ]);
     console.log('✅ Existing data cleared\n');
 
@@ -263,6 +267,11 @@ async function seed() {
     console.log('🌟 Seeding cycle highlights...');
     const cycleHighlights = await cycleHighlightModel.insertMany(seedData.cycleHighlights);
     console.log(`✅ Inserted ${cycleHighlights.length} cycle highlights\n`);
+
+    // Seed Period Length Data
+    console.log('📊 Seeding period length data...');
+    const periodLengths = await periodLengthModel.insertMany(periodLengthData);
+    console.log(`✅ Inserted ${periodLengths.length} period length records\n`);
 
     // Seed Tracking Data (for demo/test user)
     const userModel = app.get<Model<User>>(getModelToken(User.name));
@@ -338,6 +347,7 @@ async function seed() {
     console.log(`   • Symptom Categories: ${symptomCategories.length}`);
     console.log(`   • Health Tips: ${healthTips.length}`);
     console.log(`   • Cycle Highlights: ${cycleHighlights.length}`);
+    console.log(`   • Period Length Records: ${periodLengths.length}`);
     if (firstUser) {
       console.log(`   • Cycle Records: 3 (for ${firstUser.email})`);
       console.log(`   • Symptom Logs: 8 (for ${firstUser.email})`);

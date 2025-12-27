@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { SymptomFrequency } from './schemas/symptom-frequency.schema';
+import { PeriodLength } from './schemas/period-length.schema';
 import { CycleRecord } from '../tracking/schemas/cycle-record.schema';
 import { SymptomLog } from '../tracking/schemas/symptom-log.schema';
 
@@ -9,6 +10,7 @@ import { SymptomLog } from '../tracking/schemas/symptom-log.schema';
 export class HealthReportService {
   constructor(
     @InjectModel(SymptomFrequency.name) private symptomFrequencyModel: Model<SymptomFrequency>,
+    @InjectModel(PeriodLength.name) private periodLengthModel: Model<PeriodLength>,
     @InjectModel(CycleRecord.name) private cycleRecordModel: Model<CycleRecord>,
     @InjectModel(SymptomLog.name) private symptomLogModel: Model<SymptomLog>,
   ) {}
@@ -95,6 +97,13 @@ export class HealthReportService {
     return this.symptomLogModel
       .find(query)
       .sort({ date: -1 })
+      .lean();
+  }
+
+  async getPeriodLengthData(userId: string) {
+    return this.periodLengthModel
+      .find({})
+      .sort({ timestamp: 1 })
       .lean();
   }
 }

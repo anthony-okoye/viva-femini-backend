@@ -42,4 +42,9 @@ export class HealthReportController {
       endDate ? new Date(endDate) : undefined,
     );
   }
+
+  @Get('period-length')
+  async getPeriodLength() {
+    return this.healthReportService.getPeriodLengthData('');
+  }
 }
