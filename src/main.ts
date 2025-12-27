@@ -7,7 +7,7 @@ async function bootstrap() {
 
   const frontendUrls = process.env.FRONTEND_URL 
     ? process.env.FRONTEND_URL.split(',').map(url => url.trim())
-    : ['http://localhost:3000'];
+    : ['http://localhost:3000', 'https://viva-femini-frontend.vercel.app'];
 
   console.log('CORS enabled for origins:', frontendUrls);
 
