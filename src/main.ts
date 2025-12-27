@@ -2,17 +2,32 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import express from 'express';
+import cors from 'cors';
 import { json, urlencoded } from 'express';
 
 async function bootstrap() {
   const server = express();
-  const app = await NestFactory.create(AppModule, new ExpressAdapter(server),);
 
   const frontendUrls = process.env.FRONTEND_URL 
     ? process.env.FRONTEND_URL.split(',').map(url => url.trim())
     : ['http://localhost:3000', 'https://viva-femini-frontend.vercel.app'];
 
   console.log('CORS enabled for origins:', frontendUrls);
+
+  // ✅ HARD CORS AT EXPRESS LEVEL (THIS IS THE FIX)
+  server.use(
+    cors({
+      origin: frontendUrls,
+      credentials: true,
+      methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+    }),
+  );
+
+  // ✅ EXPLICIT OPTIONS HANDLER (NON-NEGOTIABLE ON VERCEL)
+  server.options('*', cors());
+
+  const app = await NestFactory.create(AppModule, new ExpressAdapter(server),);
 
   app.enableCors({
     origin: frontendUrls,
