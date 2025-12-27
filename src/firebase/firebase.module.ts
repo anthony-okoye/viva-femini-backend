@@ -8,14 +8,17 @@ import * as path from 'path';
     provide: 'FIREBASE_ADMIN',
     useFactory: () => {
       try {
+        // Check if Firebase app already exists
+        if (admin.apps.length > 0) {
+          return admin.app(); // Return existing app
+        }
+
         const serviceAccount = require(path.join(process.cwd(), 'firebase-adminsdk.json'));
         return admin.initializeApp({
           credential: admin.credential.cert(serviceAccount),
         });
       } catch (error) {
         console.error('Firebase Admin SDK initialization failed:', error);
-        // We return admin anyway or throw depending on how strict we want to be.
-        // If the file is missing, it will throw here.
         throw error;
       }
     },
