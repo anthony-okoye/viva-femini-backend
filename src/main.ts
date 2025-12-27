@@ -13,8 +13,22 @@ async function bootstrap() {
 
   app.enableCors({
     origin: frontendUrls,
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'Accept',
+      'X-Requested-With',
+      'X-CSRF-Token',
+      'Accept-Version',
+      'Content-Length',
+      'Content-MD5',
+      'Date',
+      'X-Api-Version',
+    ],
     credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
   });
 
   // Increase payload size limit for base64 images (10MB)
